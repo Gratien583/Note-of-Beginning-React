@@ -1,0 +1,73 @@
+.adminContainer {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    font-family: 'Arial', sans-serif;
+    overflow-x: hidden;
+}
+
+.mainContent {
+    display: flex;
+    flex: 1;
+}
+
+.contentContainer {
+    flex: 1;
+    margin-left: 250px;
+    padding: 20px;
+    padding-top: 80px;
+    background-color: #f8f9fa;
+}
+
+h1 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.blogContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.blogBoxLink {
+    text-decoration: none;
+    color: inherit;
+}
+
+.blogBox {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+}
+
+.blogBox:hover {
+    transform: scale(1.02);
+}
+
+.blogBox h2 {
+    font-size: 1.5rem;
+    margin: 10px 0;
+}
+
+.thumbnailContainer {
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.blogThumbnail {
+    max-width: 100%;
+    border-radius: 8px;
+}
+
+.published {
+    border: 2px solid green;
+}
+
+.unpublished {
+    border: 2px solid red;
+}

@@ -1,0 +1,67 @@
+.adminContainer {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    font-family: 'Arial', sans-serif;
+}
+
+.contentContainer {
+    flex: 1;
+    padding: 20px;
+    padding-top: 80px;
+    margin-left: 250px;
+    background-color: #f8f9fa;
+    box-sizing: border-box;
+    width: calc(100% - 250px);
+}
+
+h1 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.successMessage {
+    color: green;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.accountTable {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.accountTable th, .accountTable td {
+    padding: 15px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.accountTable th {
+    background-color: #2c3e50;
+    color: white;
+    font-weight: bold;
+}
+
+.accountTable tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.deleteButton {
+    padding: 10px 15px;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.deleteButton:hover {
+    background-color: #c0392b;
+}
+

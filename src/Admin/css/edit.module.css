@@ -1,0 +1,68 @@
+.adminContainer {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    font-family: 'Arial', sans-serif;
+}
+
+.formContainer {
+    flex: 1;
+    padding: 20px;
+    padding-top: 80px;
+    margin-left: 250px;
+    background-color: #f8f9fa;
+    box-sizing: border-box;
+    width: calc(100% - 250px);
+}
+
+.label {
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.inputField {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.quillEditor {
+    height: 400px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+.thumbnailPreview {
+    max-width: 200px;
+    border-radius: 8px;
+    margin-top: 10px;
+}
+
+.addButton {
+    padding: 10px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.addButton:hover {
+    background-color: #0056b3;
+}
+
+.submitButton {
+    padding: 12px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.submitButton:hover {
+    background-color: #218838;
+}
