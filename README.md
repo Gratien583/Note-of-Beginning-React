@@ -1,10 +1,9 @@
 ## 📦 Technologies Used
 
-![React](https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg)  
-![Supabase](https://seeklogo.com/images/S/supabase-logo-DCC676FFE2-seeklogo.com.png)
+![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
 
-- **Frontend:** React (TypeScript)
-- **Backend:** Supabase (PostgreSQL, Authentication, Storage)
 ---
 
 ## 📦 Database Schema
