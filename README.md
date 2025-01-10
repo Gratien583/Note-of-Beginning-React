@@ -1,7 +1,10 @@
-# 📖 Blog Management System
+## 📦 Technologies Used
 
-A blog management system built using **React** and **Supabase**.
+![React](https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg)  
+![Supabase](https://seeklogo.com/images/S/supabase-logo-DCC676FFE2-seeklogo.com.png)
 
+- **Frontend:** React (TypeScript)
+- **Backend:** Supabase (PostgreSQL, Authentication, Storage)
 ---
 
 ## 📦 Database Schema
