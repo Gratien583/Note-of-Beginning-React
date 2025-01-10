@@ -1,7 +1,10 @@
-## Database Schema
+# 📖 Blog Management System
 
-This project uses the following PostgreSQL database schema.
+A blog management system built using **React** and **Supabase**.
 
+---
+
+## 📦 Database Schema
 ```sql
 -- accounts table
 CREATE TABLE accounts (
