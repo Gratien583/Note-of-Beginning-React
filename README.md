@@ -34,6 +34,8 @@ CREATE TABLE blog_categories (
     FOREIGN KEY (blog_id) REFERENCES blogs(id) ON DELETE CASCADE
 );
 
+```
+
 ## 🔗 関連プロジェクト
 
 - 📄 ローカルストレージ版  
