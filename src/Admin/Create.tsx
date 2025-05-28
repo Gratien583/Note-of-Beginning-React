@@ -75,7 +75,7 @@ const Create: React.FC = () => {
           .insert([{ blog_id: blogId, category_name: category }]);
       }
 
-      navigate("/dashboard"); 
+      navigate("/Admin/dashboard");
     } catch (error) {
       alert(`エラーが発生しました: ${error}`);
     }
