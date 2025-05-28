@@ -58,49 +58,57 @@ const NewAccount: React.FC = () => {
   };
 
   return (
-    <div className={styles.adminContainer}>
-      <SideNav />
-      <div className={styles["content-container"]}>
-        <h1>アカウント作成</h1>
-        {errors.general && (
-          <p className={styles["error-message"]}>{errors.general}</p>
-        )}
-        <form onSubmit={handleSubmit}>
-          <label htmlFor="username">ユーザー名：</label>
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className={errors.username ? styles.error : ""}
-          />
-          {errors.username && (
-            <p className={styles["error-message"]}>{errors.username}</p>
-          )}
+    <div className={styles.pageWrapper}>
+      <div className={styles.adminContainer}>
+        <div className={styles.sideNav}>
+          <SideNav />
+        </div>
+        <div className={styles.contentContainer}>
+          <div className={styles.formWrapper}>
+            <h1>アカウント作成</h1>
+            {errors.general && (
+              <p className={styles["error-message"]}>{errors.general}</p>
+            )}
+            <form onSubmit={handleSubmit}>
+              <label htmlFor="username">ユーザー名：</label>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className={errors.username ? styles.error : ""}
+              />
+              {errors.username && (
+                <p className={styles["error-message"]}>{errors.username}</p>
+              )}
 
-          <label htmlFor="password">パスワード：</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className={errors.password ? styles.error : ""}
-          />
-          {errors.password && (
-            <p className={styles["error-message"]}>{errors.password}</p>
-          )}
+              <label htmlFor="password">パスワード：</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className={errors.password ? styles.error : ""}
+              />
+              {errors.password && (
+                <p className={styles["error-message"]}>{errors.password}</p>
+              )}
 
-          <label htmlFor="confirmPassword">パスワード確認：</label>
-          <input
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            className={errors.confirmPassword ? styles.error : ""}
-          />
-          {errors.confirmPassword && (
-            <p className={styles["error-message"]}>{errors.confirmPassword}</p>
-          )}
+              <label htmlFor="confirmPassword">パスワード確認：</label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className={errors.confirmPassword ? styles.error : ""}
+              />
+              {errors.confirmPassword && (
+                <p className={styles["error-message"]}>
+                  {errors.confirmPassword}
+                </p>
+              )}
 
-          <button type="submit">アカウント作成</button>
-        </form>
+              <button type="submit">アカウント作成</button>
+            </form>
+          </div>
+        </div>
       </div>
       <Footer />
     </div>
