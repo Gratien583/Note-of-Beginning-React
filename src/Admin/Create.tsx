@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import SideNav from "./components/SideNav";
 import Footer from "./components/Footer";
@@ -13,6 +14,7 @@ const Create: React.FC = () => {
   const [categories, setCategories] = useState<string[]>([]);
   const quillRef = useRef<HTMLDivElement>(null);
   const quillInstance = useRef<Quill | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (quillRef.current && !quillInstance.current) {
@@ -73,11 +75,33 @@ const Create: React.FC = () => {
           .insert([{ blog_id: blogId, category_name: category }]);
       }
 
-      alert("記事が作成されました！");
+      navigate("/dashboard"); 
     } catch (error) {
       alert(`エラーが発生しました: ${error}`);
     }
   };
+
+const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  const fileExt = file.name.split(".").pop();
+  const fileName = `${Date.now()}.${fileExt}`;
+  const filePath = `${fileName}`;
+
+  const { error } = await supabase.storage
+    .from("thumbnails")
+    .upload(filePath, file);
+
+  if (error) {
+    alert("画像のアップロードに失敗しました：" + error.message);
+    return;
+  }
+
+  const { data } = supabase.storage.from("thumbnails").getPublicUrl(filePath);
+  setThumbnail(data.publicUrl);
+};
+
 
   return (
     <div className={styles.adminContainer}>
@@ -96,12 +120,11 @@ const Create: React.FC = () => {
               className={styles.inputField}
             />
 
-            <label>サムネイル URL:</label>
+            <label>サムネイル画像:</label>
             <input
-              type="text"
-              value={thumbnail}
-              onChange={(e) => setThumbnail(e.target.value)}
-              required
+              type="file"
+              accept="image/*"
+              onChange={handleThumbnailUpload}
               className={styles.inputField}
             />
 
