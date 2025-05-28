@@ -103,22 +103,24 @@ const Home: React.FC = () => {
         />
         <div>
           {blogs.length > 0 ? (
-            blogs.map((blog) => (
-              <div
-                key={blog.id}
-                onClick={() => navigate(`/blog/${blog.id}`)}
-                className={styles.blogItem}
-              >
-                {blog.thumbnail && (
-                  <img
-                    src={blog.thumbnail}
-                    alt="サムネイル"
-                    className={styles.blogThumbnail}
-                  />
-                )}
-                <h2 className={styles.blogTitle}>{blog.title}</h2>
-              </div>
-            ))
+            <div className={styles.blogList}>
+              {blogs.map((blog) => (
+                <div
+                  key={blog.id}
+                  onClick={() => navigate(`/blog/${blog.id}`)}
+                  className={styles.blogItem}
+                >
+                  {blog.thumbnail && (
+                    <img
+                      src={blog.thumbnail}
+                      alt="サムネイル"
+                      className={styles.blogThumbnail}
+                    />
+                  )}
+                  <h2 className={styles.blogTitle}>{blog.title}</h2>
+                </div>
+              ))}
+            </div>
           ) : (
             <p className={styles.noBlogs}></p>
           )}

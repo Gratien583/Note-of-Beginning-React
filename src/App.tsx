@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
+import BlogDetail from './pages/BlogDetail';
 import Login from './pages/Login';
 import NewAccount from './pages/NewAccount';
 import AccountSuccess from './pages/AccountSuccess';
@@ -19,7 +20,7 @@ const App: React.FC = () => {
                 <Route path="/login" element={<Login />} />
                 <Route path="/new-account" element={<NewAccount />} />
                 <Route path="/account-success" element={<AccountSuccess />} />
-
+                <Route path="/blog/:id" element={<BlogDetail />} />
                 {/* 管理者向けのルート */}
                 <Route path="/Admin/dashboard" element={<Dashboard />} />
                 <Route path="/Admin/list" element={<List />} />

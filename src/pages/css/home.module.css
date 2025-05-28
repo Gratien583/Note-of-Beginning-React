@@ -27,12 +27,19 @@
 }
 
 .blogItem {
-    padding: 16px;
+    width: 150px;
+    height: 150px;
+    padding: 8px;
     border: 1px solid #ddd;
     border-radius: 8px;
-    margin-bottom: 20px;
+    margin: 10px;
     cursor: pointer;
     transition: background-color 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
 .blogItem:hover {
