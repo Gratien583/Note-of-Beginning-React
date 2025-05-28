@@ -109,6 +109,31 @@ const Edit: React.FC = () => {
     }
   };
 
+  const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  const fileExt = file.name.split(".").pop();
+  const fileName = `${Date.now()}.${fileExt}`;
+  const filePath = `${fileName}`;
+
+  const { error } = await supabase.storage
+    .from("thumbnails")
+    .upload(filePath, file, {
+      cacheControl: "3600",
+      upsert: false,
+    });
+
+  if (error) {
+    alert("画像のアップロードに失敗しました：" + error.message);
+    return;
+  }
+
+  const { data } = supabase.storage.from("thumbnails").getPublicUrl(filePath);
+  setThumbnail(data.publicUrl);
+};
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!quillInstance.current) return;
@@ -133,8 +158,6 @@ const Edit: React.FC = () => {
           category_name: category,
         });
       }
-
-      alert("記事を更新しました");
       navigate("/Admin/dashboard");
     } catch (error) {
       alert("エラーが発生しました: " + error);
@@ -142,6 +165,7 @@ const Edit: React.FC = () => {
   };
 
   return (
+    <>
     <div className={styles.adminContainer}>
       <SideNav />
       <div className={styles.formContainer}>
@@ -159,22 +183,13 @@ const Edit: React.FC = () => {
           <label className={styles.label}>本文:</label>
           <div ref={quillRef} className={styles.quillEditor}></div>
 
-          <label className={styles.label}>サムネイル URL:</label>
-          <input
-            type="text"
-            value={thumbnail}
-            onChange={(e) => setThumbnail(e.target.value)}
-            required
-            className={styles.inputField}
-          />
-          {thumbnail && (
-            <img
-              src={thumbnail}
-              alt="サムネイルプレビュー"
-              className={styles.thumbnailPreview}
-            />
-          )}
-
+            <label className={styles.label}>サムネイル画像アップロード:</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleThumbnailUpload}
+              className={styles.inputField}
+            />    
           <label className={styles.label}>カテゴリの追加:</label>
           <input
             type="text"
@@ -209,8 +224,9 @@ const Edit: React.FC = () => {
           </button>
         </form>
       </div>
-      <Footer />
     </div>
+    <Footer />
+    </>
   );
 };
 
