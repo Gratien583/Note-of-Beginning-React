@@ -33,3 +33,18 @@ CREATE TABLE blog_categories (
     category_name VARCHAR(50) NOT NULL,
     FOREIGN KEY (blog_id) REFERENCES blogs(id) ON DELETE CASCADE
 );
+
+```
+
+## 🔗 関連プロジェクト
+
+- 📄 ローカルストレージ版  
+  [https://github.com/Gratien583/Note-of-Beginning](https://github.com/Gratien583/Note-of-Beginning)  
+
+- ⚛️ React + Supabase (β)：フロントエンドを React、バックエンドに Supabase を使用 （このリポジトリ） 
+
+- 🐘 PHP + MySQL 版：サーバーサイドを PHP、データ保存に MySQL を使用  
+  [https://github.com/Gratien583/Note-of-Beginning-PHP](https://github.com/Gratien583/Note-of-Beginning-PHP)  
+
+- 🐳 Docker 対応版 (β)  
+  [https://github.com/Gratien583/Note-of-Beginning-Docker](https://github.com/Gratien583/Note-of-Beginning-Docker)
