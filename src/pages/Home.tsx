@@ -101,28 +101,31 @@ const Home: React.FC = () => {
           onChange={handleSearchChange}
           className={styles.searchInput}
         />
-        <div>
+        <div className={styles.blogList}>
           {blogs.length > 0 ? (
-            <div className={styles.blogList}>
-              {blogs.map((blog) => (
-                <div
-                  key={blog.id}
-                  onClick={() => navigate(`/blog/${blog.id}`)}
-                  className={styles.blogItem}
-                >
+            blogs.map((blog) => (
+              <div
+                key={blog.id}
+                onClick={() => navigate(`/blog/${blog.id}`)}
+                className={styles.blogBoxLink}
+                style={{ cursor: "pointer" }}
+              >
+                <div className={styles.blogBox}>
                   {blog.thumbnail && (
-                    <img
-                      src={blog.thumbnail}
-                      alt="サムネイル"
-                      className={styles.blogThumbnail}
-                    />
+                    <div className={styles.thumbnailContainer}>
+                      <img
+                        src={blog.thumbnail}
+                        alt="サムネイル"
+                        className={styles.blogThumbnail}
+                      />
+                    </div>
                   )}
-                  <h2 className={styles.blogTitle}>{blog.title}</h2>
+                  <h2>{blog.title}</h2>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))
           ) : (
-            <p className={styles.noBlogs}></p>
+            <p className={styles.noBlogs}>記事がありません。</p>
           )}
         </div>
       </div>
