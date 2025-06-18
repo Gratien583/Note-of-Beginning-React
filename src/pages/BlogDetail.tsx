@@ -113,17 +113,17 @@ const BlogDetail: React.FC = () => {
   );
 };
 
-const extractHeadings = (html: string) => {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(html, "text/html");
-  const headings = Array.from(doc.querySelectorAll("h1, h2")).map(
-    (heading, index) => ({
-      id: `heading_${index}`,
-      text: heading.textContent || "",
-      level: heading.tagName === "H1" ? 1 : 2,
-    })
-  );
-  return headings;
-};
+// const extractHeadings = (html: string) => {
+//   const parser = new DOMParser();
+//   const doc = parser.parseFromString(html, "text/html");
+//   const headings = Array.from(doc.querySelectorAll("h1, h2")).map(
+//     (heading, index) => ({
+//       id: `heading_${index}`,
+//       text: heading.textContent || "",
+//       level: heading.tagName === "H1" ? 1 : 2,
+//     })
+//   );
+//   return headings;
+// };
 
 export default BlogDetail;
