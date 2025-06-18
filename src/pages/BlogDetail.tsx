@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 import { useParams, useNavigate } from "react-router-dom";
 import styles from "./css/BlogDetail.module.css";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 
 type Blog = {
   id: string;
@@ -64,6 +66,8 @@ const BlogDetail: React.FC = () => {
   }
 
   return (
+       <>
+    <Header />
     <div className={styles.container}>
       {/* タイトルの表示 */}
       <h1>{blog.title}</h1>
@@ -103,6 +107,8 @@ const BlogDetail: React.FC = () => {
         dangerouslySetInnerHTML={{ __html: blog.content }}
       />
     </div>
+    <Footer />
+    </>
   );
 };
 
