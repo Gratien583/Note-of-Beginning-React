@@ -10,13 +10,19 @@ type Blog = {
   title: string;
   thumbnail?: string;
   created_at: string;
+  category_ids: number[];
+};
+
+type Category = {
+  id: number;
+  name: string;
 };
 
 const Home: React.FC = () => {
   const [blogs, setBlogs] = useState<Blog[]>([]);
-  const [categories, setCategories] = useState<string[]>([]);
+  const [allCategories, setAllCategories] = useState<Category[]>([]);
   const [searchKeyword, setSearchKeyword] = useState("");
-  const [category, setCategory] = useState("");
+  const [selectedCategoryId, setSelectedCategoryId] = useState("");
   const navigate = useNavigate();
 
   const fetchBlogs = useCallback(async () => {
@@ -30,31 +36,29 @@ const Home: React.FC = () => {
       query = query.ilike("title", `%${searchKeyword}%`);
     }
 
-    if (category) {
-      query = query.contains("categories", [category]);
+    if (selectedCategoryId) {
+      query = query.contains("category_ids", [Number(selectedCategoryId)]);
     }
 
     const { data, error } = await query;
+
     if (error) {
       console.error("ブログの取得に失敗しました:", error.message);
     } else {
       setBlogs(data || []);
     }
-  }, [searchKeyword, category]);
+  }, [searchKeyword, selectedCategoryId]);
 
   const fetchCategories = async () => {
     const { data, error } = await supabase
-      .from("blog_categories")
-      .select("category_name")
-      .order("category_name", { ascending: true });
+      .from("categories")
+      .select("*")
+      .order("name", { ascending: true });
 
     if (error) {
       console.error("カテゴリの取得に失敗しました:", error.message);
     } else {
-      const uniqueCategories: string[] = Array.from(
-        new Set(data.map((cat: { category_name: string }) => cat.category_name))
-      );
-      setCategories(uniqueCategories);
+      setAllCategories(data || []);
     }
   };
 
@@ -71,7 +75,7 @@ const Home: React.FC = () => {
   };
 
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setCategory(e.target.value);
+    setSelectedCategoryId(e.target.value);
   };
 
   return (
@@ -82,18 +86,19 @@ const Home: React.FC = () => {
           <label htmlFor="category-select">カテゴリ:</label>
           <select
             id="category-select"
-            value={category}
+            value={selectedCategoryId}
             onChange={handleCategoryChange}
             className={styles.categorySelect}
           >
             <option value="">すべて</option>
-            {categories.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
+            {allCategories.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.name}
               </option>
             ))}
           </select>
         </div>
+
         <input
           type="text"
           placeholder="検索キーワード"
@@ -101,6 +106,7 @@ const Home: React.FC = () => {
           onChange={handleSearchChange}
           className={styles.searchInput}
         />
+
         <div className={styles.blogList}>
           {blogs.length > 0 ? (
             blogs.map((blog) => (
