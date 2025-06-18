@@ -46,7 +46,11 @@ const SideNav: React.FC = () => {
           <li
             key={index}
             className={
-              location.pathname === link.path ? styles.activeList : styles.list
+              location.pathname
+                .toLowerCase()
+                .startsWith(link.path.toLowerCase())
+                ? styles.activeList
+                : styles.list
             }
           >
             <Link to={link.path}>
