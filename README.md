@@ -39,7 +39,7 @@ CREATE TABLE blog_categories (
 ## 🔗 関連プロジェクト
 
 - 📄 ローカルストレージ版  
-  [https://github.com/Gratien583/Note-of-Beginning](https://github.com/Gratien583/Note-of-Beginning)  
+  [https://github.com/Gratien583/Note-of-Beginning](https://github.com/Gratien583/Note-of-Beginning-js)  
 
 - ⚛️ React + Supabase (β)：フロントエンドを React、バックエンドに Supabase を使用 （このリポジトリ） 
 
