@@ -1,7 +1,7 @@
 body {
   font-family: "Arial", sans-serif;
   margin: 0;
-  margin-top: 30px;
+  margin-top: 80px;
   padding: 0;
   background-color: #f4f4f4;
 }
@@ -127,4 +127,19 @@ img {
   background-color: #f9f9f9;
   border-left: solid 4px #333;
   display: inline-block;
+}
+
+.categoryContainer {
+  margin-top: 32px;
+}
+
+.categoryBadge {
+  display: inline-block;
+  background-color: #f0f0f0;
+  color: #333;
+  padding: 4px 8px;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  font-size: 0.9rem;
 }

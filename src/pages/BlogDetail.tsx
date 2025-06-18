@@ -5,18 +5,21 @@ import styles from "./css/BlogDetail.module.css";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 
+type Category = { id: number; name: string };
+
 type Blog = {
   id: string;
   title: string;
   content: string;
   thumbnail?: string;
   created_at: string;
-  categories: string[];
+  category_ids: number[];
 };
 
 const BlogDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [blog, setBlog] = useState<Blog | null>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,6 +29,7 @@ const BlogDetail: React.FC = () => {
         return;
       }
 
+      // 記事取得
       const { data: blogData, error: blogError } = await supabase
         .from("blogs")
         .select("*")
@@ -40,22 +44,18 @@ const BlogDetail: React.FC = () => {
         return;
       }
 
+      // カテゴリ取得
       const { data: categoryData, error: categoryError } = await supabase
-        .from("blog_categories")
-        .select("category_name")
-        .eq("blog_id", id);
+        .from("categories")
+        .select("*")
+        .in("id", blogData.category_ids);
 
       if (categoryError) {
         console.error("カテゴリの取得に失敗しました:", categoryError.message);
       }
 
-      setBlog({
-        ...blogData,
-        categories:
-          categoryData?.map(
-            (cat: { category_name: string }) => cat.category_name
-          ) || [],
-      });
+      setBlog(blogData);
+      setCategories(categoryData || []);
     };
 
     fetchBlog();
@@ -66,48 +66,49 @@ const BlogDetail: React.FC = () => {
   }
 
   return (
-       <>
-    <Header />
-    <div className={styles.container}>
-      {/* タイトルの表示 */}
-      <h1>{blog.title}</h1>
+    <>
+      <Header />
+      <div className={styles.container}>
+        <h1>{blog.title}</h1>
+        <p>作成日: {new Date(blog.created_at).toLocaleDateString()}</p>
 
-      {/* 投稿日時の表示 */}
-      <p>作成日: {new Date(blog.created_at).toLocaleDateString()}</p>
+        {blog.thumbnail && (
+          <img
+            src={blog.thumbnail}
+            alt="サムネイル"
+            style={{ width: "100%" }}
+          />
+        )}
 
-      {/* サムネイルの表示 */}
-      {blog.thumbnail && (
-        <img src={blog.thumbnail} alt="サムネイル" style={{ width: "100%" }} />
-      )}
+        {/* <div className={styles.tableOfContents}>
+          <p className={styles.mokuji}>目次</p>
+          <ul>
+            {extractHeadings(blog.content).map((heading, index) => (
+              <li key={index}>
+                <a
+                  href={`#${heading.id}`}
+                  style={{ marginLeft: heading.level === 2 ? "32px" : "10px" }}
+                >
+                  {heading.text}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div> */}
 
-      {/* カテゴリの表示 */}
-      <div className={styles.categoryContainer}>
-        {blog.categories.length > 0 ? `#${blog.categories.join("   #")}` : ""}
-      </div>
-
-      {/* 目次の表示 */}
-      <div className={styles.tableOfContents}>
-        <p className={styles.mokuji}>目次</p>
-        <ul>
-          {extractHeadings(blog.content).map((heading, index) => (
-            <li key={index}>
-              <a
-                href={`#${heading.id}`}
-                style={{ marginLeft: heading.level === 2 ? "32px" : "10px" }}
-              >
-                {heading.text}
-              </a>
-            </li>
+        <div
+          className={styles.blogContent}
+          dangerouslySetInnerHTML={{ __html: blog.content }}
+        />
+        <div className={styles.categoryContainer}>
+          {categories.map((cat) => (
+            <span key={cat.id} className={styles.categoryBadge}>
+              #{cat.name}
+            </span>
           ))}
-        </ul>
+        </div>
       </div>
-
-      <div
-        className={styles.blogContent}
-        dangerouslySetInnerHTML={{ __html: blog.content }}
-      />
-    </div>
-    <Footer />
+      <Footer />
     </>
   );
 };
