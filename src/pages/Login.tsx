@@ -22,7 +22,7 @@ const Login: React.FC = () => {
         .single();
 
       if (error || !account) {
-        setErrorMessage("ユーザー名が存在しません。");
+        setErrorMessage("ユーザー名またはパスワードが間違っています。");
         return;
       }
 
@@ -31,7 +31,7 @@ const Login: React.FC = () => {
         account.password_hash
       );
       if (!isPasswordValid) {
-        setErrorMessage("パスワードが正しくありません。");
+        setErrorMessage("ユーザー名またはパスワードが間違っています。");
         return;
       }
 
