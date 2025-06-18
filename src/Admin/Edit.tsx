@@ -109,30 +109,31 @@ const Edit: React.FC = () => {
     }
   };
 
-  const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-  const file = e.target.files?.[0];
-  if (!file) return;
+  const handleThumbnailUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-  const fileExt = file.name.split(".").pop();
-  const fileName = `${Date.now()}.${fileExt}`;
-  const filePath = `${fileName}`;
+    const fileExt = file.name.split(".").pop();
+    const fileName = `${Date.now()}.${fileExt}`;
+    const filePath = `${fileName}`;
 
-  const { error } = await supabase.storage
-    .from("thumbnails")
-    .upload(filePath, file, {
-      cacheControl: "3600",
-      upsert: false,
-    });
+    const { error } = await supabase.storage
+      .from("thumbnails")
+      .upload(filePath, file, {
+        cacheControl: "3600",
+        upsert: false,
+      });
 
-  if (error) {
-    alert("画像のアップロードに失敗しました：" + error.message);
-    return;
-  }
+    if (error) {
+      alert("画像のアップロードに失敗しました：" + error.message);
+      return;
+    }
 
-  const { data } = supabase.storage.from("thumbnails").getPublicUrl(filePath);
-  setThumbnail(data.publicUrl);
-};
-
+    const { data } = supabase.storage.from("thumbnails").getPublicUrl(filePath);
+    setThumbnail(data.publicUrl);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -166,66 +167,82 @@ const Edit: React.FC = () => {
 
   return (
     <>
-    <div className={styles.adminContainer}>
-      <SideNav />
-      <div className={styles.formContainer}>
-        <h1>記事を編集</h1>
-        <form onSubmit={handleSubmit}>
-          <label className={styles.label}>タイトル:</label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-            className={styles.inputField}
-          />
+      <div className={styles.adminContainer}>
+        <SideNav />
+        <div className={styles.formContainer}>
+          <h1>記事を編集</h1>
+          <form onSubmit={handleSubmit}>
+            <label className={styles.label}>タイトル:</label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+              className={styles.inputField}
+            />
 
-          <label className={styles.label}>本文:</label>
-          <div ref={quillRef} className={styles.quillEditor}></div>
+            <label className={styles.label}>本文:</label>
+            <div ref={quillRef} className={styles.quillEditor}></div>
 
-            <label className={styles.label}>サムネイル画像アップロード:</label>
+            <label className={styles.label}>サムネイル画像:</label>
+            {thumbnail && (
+              <img
+                src={thumbnail}
+                alt="現在のサムネイル"
+                style={{
+                  width: "100px",
+                  height: "100px",
+                  objectFit: "cover",
+                  borderRadius: "6px",
+                  marginBottom: "10px",
+                  display: "block",
+                  marginLeft: "0",
+                }}
+              />
+            )}
             <input
               type="file"
               accept="image/*"
               onChange={handleThumbnailUpload}
               className={styles.inputField}
-            />    
-          <label className={styles.label}>カテゴリの追加:</label>
-          <input
-            type="text"
-            value={newCategory}
-            onChange={(e) => setNewCategory(e.target.value)}
-            className={styles.inputField}
-          />
-          <button
-            type="button"
-            onClick={addNewCategory}
-            className={styles.addButton}
-          >
-            カテゴリ追加
-          </button>
+            />
 
-          <div className={styles.categoryList}>
-            {categories.map((category: string) => (
-              <label key={category} className={styles.categoryLabel}>
-                <input
-                  type="checkbox"
-                  value={category}
-                  checked={selectedCategories.includes(category)}
-                  onChange={() => handleCategoryChange(category)}
-                />
-                {category}
-              </label>
-            ))}
-          </div>
+            <label className={styles.label}>カテゴリの追加:</label>
+            <input
+              type="text"
+              value={newCategory}
+              onChange={(e) => setNewCategory(e.target.value)}
+              className={styles.inputField}
+            />
+            <button
+              type="button"
+              onClick={addNewCategory}
+              className={styles.addButton}
+            >
+              カテゴリ追加
+            </button>
 
-          <button type="submit" className={styles.submitButton}>
-            記事を保存
-          </button>
-        </form>
+            <div className={styles.categoryList}>
+              {categories.map((category: string) => (
+                <label key={category} className={styles.categoryLabel}>
+                  <input
+                    type="checkbox"
+                    value={category}
+                    checked={selectedCategories.includes(category)}
+                    onChange={() => handleCategoryChange(category)}
+                  />
+                  {category}
+                </label>
+              ))}
+            </div>
+
+            <button type="submit" className={styles.submitButton}>
+              記事を保存
+            </button>
+          </form>
+        </div>
       </div>
-    </div>
-    <Footer />
+      <Footer />
     </>
   );
 };

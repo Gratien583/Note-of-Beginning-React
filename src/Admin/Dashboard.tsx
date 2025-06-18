@@ -45,25 +45,22 @@ const Dashboard: React.FC = () => {
                 <div
                   key={blog.id}
                   onClick={() => navigate(`/Admin/edit/${blog.id}`)}
-                  className={styles.blogBoxLink}
-                  style={{ cursor: "pointer" }}
+                  className={`${styles.blogBox} ${
+                    blog.published ? styles.published : styles.unpublished
+                  }`}
                 >
-                  <div
-                    className={`${styles.blogBox} ${
-                      blog.published ? styles.published : styles.unpublished
-                    }`}
-                  >
-                    {blog.thumbnail && (
-                      <div className={styles.thumbnailContainer}>
-                        <img
-                          src={blog.thumbnail}
-                          alt="サムネイル"
-                          className={styles.blogThumbnail}
-                        />
-                      </div>
-                    )}
-                    <h2>{blog.title}</h2>
-                  </div>
+                  {blog.thumbnail && (
+                    <div className={styles.thumbnailContainer}>
+                      <img
+                        src={blog.thumbnail}
+                        alt="サムネイル"
+                        loading="lazy"
+                        decoding="async"
+                        className={styles.blogThumbnail}
+                      />
+                    </div>
+                  )}
+                  <h2>{blog.title}</h2>
                 </div>
               ))
             ) : (
