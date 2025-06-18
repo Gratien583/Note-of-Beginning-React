@@ -32,10 +32,9 @@ const NewAccount: React.FC = () => {
         return;
       }
 
-      const passwordHash = password;
       const { error } = await supabase
         .from("accounts")
-        .insert([{ username, password_hash: passwordHash }]);
+        .insert([{ username, password: password }]);
 
       if (error) {
         setErrorMessage("アカウント作成中にエラーが発生しました。");

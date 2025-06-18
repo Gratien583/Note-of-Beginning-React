@@ -28,7 +28,7 @@ const Login: React.FC = () => {
 
       const isPasswordValid = await verifyPassword(
         password,
-        account.password_hash
+        account.password
       );
       if (!isPasswordValid) {
         setErrorMessage("ユーザー名またはパスワードが間違っています。");
