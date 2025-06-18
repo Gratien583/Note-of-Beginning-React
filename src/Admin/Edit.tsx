@@ -7,13 +7,15 @@ import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import styles from "./css/edit.module.css";
 
+type Category = { id: number; name: string };
+
 const Edit: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [title, setTitle] = useState("");
   const [thumbnail, setThumbnail] = useState("");
-  const [categories, setCategories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [newCategory, setNewCategory] = useState("");
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]);
   const quillRef = useRef<HTMLDivElement>(null);
   const quillInstance = useRef<Quill | null>(null);
   const navigate = useNavigate();
@@ -35,48 +37,23 @@ const Edit: React.FC = () => {
       if (data) {
         setTitle(data.title);
         setThumbnail(data.thumbnail);
+        setSelectedCategoryIds(data.category_ids || []);
         if (quillInstance.current) {
           quillInstance.current.root.innerHTML = data.content;
         }
       } else {
-        console.error("エラー:", error);
         alert("記事が見つかりません");
         navigate("/Admin/list");
       }
     };
 
     const fetchCategories = async () => {
-      const { data } = await supabase
-        .from("blog_categories")
-        .select("category_name");
-
-      if (data) {
-        setCategories(
-          data.map(
-            (category: { category_name: string }) => category.category_name
-          )
-        );
-      }
-    };
-
-    const fetchSelectedCategories = async () => {
-      const { data } = await supabase
-        .from("blog_categories")
-        .select("category_name")
-        .eq("blog_id", id);
-
-      if (data) {
-        setSelectedCategories(
-          data.map(
-            (category: { category_name: string }) => category.category_name
-          )
-        );
-      }
+      const { data, error } = await supabase.from("categories").select("*");
+      if (data) setCategories(data);
     };
 
     fetchBlog();
     fetchCategories();
-    fetchSelectedCategories();
 
     if (quillRef.current && !quillInstance.current) {
       quillInstance.current = new Quill(quillRef.current, {
@@ -93,20 +70,31 @@ const Edit: React.FC = () => {
     }
   }, [id, navigate]);
 
-  const handleCategoryChange = (category: string) => {
-    setSelectedCategories((prev) =>
-      prev.includes(category)
-        ? prev.filter((c) => c !== category)
-        : [...prev, category]
+  const toggleCategorySelection = (categoryId: number) => {
+    setSelectedCategoryIds((prev) =>
+      prev.includes(categoryId)
+        ? prev.filter((id) => id !== categoryId)
+        : [...prev, categoryId]
     );
   };
 
-  const addNewCategory = () => {
-    if (newCategory && !categories.includes(newCategory)) {
-      setCategories([...categories, newCategory]);
-      setSelectedCategories([...selectedCategories, newCategory]);
-      setNewCategory("");
+  const addNewCategory = async () => {
+    const trimmed = newCategory.trim();
+    if (!trimmed || categories.some((c) => c.name === trimmed)) return;
+
+    const { data, error } = await supabase
+      .from("categories")
+      .insert({ name: trimmed })
+      .select();
+
+    if (error || !data) {
+      alert("カテゴリ追加に失敗しました");
+      return;
     }
+
+    setCategories((prev) => [...prev, data[0]]);
+    setSelectedCategoryIds((prev) => [...prev, data[0].id]);
+    setNewCategory("");
   };
 
   const handleThumbnailUpload = async (
@@ -121,10 +109,7 @@ const Edit: React.FC = () => {
 
     const { error } = await supabase.storage
       .from("thumbnails")
-      .upload(filePath, file, {
-        cacheControl: "3600",
-        upsert: false,
-      });
+      .upload(filePath, file);
 
     if (error) {
       alert("画像のアップロードに失敗しました：" + error.message);
@@ -148,17 +133,10 @@ const Edit: React.FC = () => {
           title,
           content: contentHtml,
           thumbnail,
+          category_ids: selectedCategoryIds,
         })
         .eq("id", id);
 
-      await supabase.from("blog_categories").delete().eq("blog_id", id);
-
-      for (const category of selectedCategories) {
-        await supabase.from("blog_categories").insert({
-          blog_id: id,
-          category_name: category,
-        });
-      }
       navigate("/Admin/dashboard");
     } catch (error) {
       alert("エラーが発生しました: " + error);
@@ -195,8 +173,6 @@ const Edit: React.FC = () => {
                   objectFit: "cover",
                   borderRadius: "6px",
                   marginBottom: "10px",
-                  display: "block",
-                  marginLeft: "0",
                 }}
               />
             )}
@@ -217,21 +193,21 @@ const Edit: React.FC = () => {
             <button
               type="button"
               onClick={addNewCategory}
-              className={styles.addButton}
+              className={styles.categoryButton}
             >
               カテゴリ追加
             </button>
 
             <div className={styles.categoryList}>
-              {categories.map((category: string) => (
-                <label key={category} className={styles.categoryLabel}>
+              {categories.map((category) => (
+                <label key={category.id} className={styles.categoryLabel}>
                   <input
                     type="checkbox"
-                    value={category}
-                    checked={selectedCategories.includes(category)}
-                    onChange={() => handleCategoryChange(category)}
+                    value={category.id}
+                    checked={selectedCategoryIds.includes(category.id)}
+                    onChange={() => toggleCategorySelection(category.id)}
                   />
-                  {category}
+                  {category.name}
                 </label>
               ))}
             </div>

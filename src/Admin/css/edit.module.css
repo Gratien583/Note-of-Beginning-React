@@ -1,72 +1,169 @@
 .adminContainer {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    max-width: 1200px;
-    margin: auto;
-    font-family: 'Arial', sans-serif;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  font-family: "Arial", sans-serif;
 }
 
 .formContainer {
-    flex: 1;
-    padding: 20px;
-    padding-top: 80px;
-    margin-left: 250px;
-    background-color: #f8f9fa;
-    box-sizing: border-box;
-    width: calc(100% - 250px);
+  max-width: 100%;
+  padding: 20px;
+  padding-top: 80px;
+  margin-left: 250px;
+  background-color: #f8f9fa;
+  box-sizing: border-box;
+  flex: 1;
 }
 
-.label {
-    font-weight: bold;
-    margin-top: 10px;
+form {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.leftColumn {
+  flex: 1;
+  min-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.rightColumn {
+  flex: 2;
+  min-width: 600px;
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-weight: bold;
+  font-size: 1.1rem;
 }
 
 .inputField {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 1rem;
-    width: 100%;
-    box-sizing: border-box;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .quillEditor {
-    height: 400px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
+  height: 600px;
+  min-height: 600px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: white;
+  padding: 10px;
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 
-.thumbnailPreview {
-    max-width: 200px;
-    border-radius: 8px;
-    margin-top: 10px;
+.categoryButton {
+  width: 130px;
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-.addButton {
-    width: 120px;
-    padding: 10px;
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
+.categoryButton:hover {
+  background-color: #0056b3;
 }
 
-.addButton:hover {
-    background-color: #0056b3;
+.categoryList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.categoryCheckboxList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.categoryCheckboxItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1rem;
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #f8f9fa;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.categoryCheckboxItem:hover {
+  background-color: #e2e6ea;
+}
+
+.categoryCheckboxItem input[type="checkbox"] {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #007bff;
+  border-radius: 4px;
+  position: relative;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.categoryCheckboxItem input[type="checkbox"]:checked {
+  background-color: #007bff;
+}
+
+.categoryCheckboxItem input[type="checkbox"]::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 5px;
+  width: 4px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  display: none;
+}
+
+.categoryCheckboxItem input[type="checkbox"]:checked::after {
+  display: block;
+}
+
+.deleteCategoryButton {
+  padding: 5px 10px;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.deleteCategoryButton:hover {
+  background-color: #c0392b;
 }
 
 .submitButton {
-    width: 140px;
-    padding: 12px;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
+  width: 140px;
+  padding: 12px 20px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .submitButton:hover {
-    background-color: #218838;
+  background-color: #218838;
 }

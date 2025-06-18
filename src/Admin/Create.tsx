@@ -7,11 +7,14 @@ import styles from "./css/create.module.css";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
 
+type Category = { id: number; name: string };
+
 const Create: React.FC = () => {
   const [title, setTitle] = useState("");
   const [thumbnail, setThumbnail] = useState("");
   const [newCategory, setNewCategory] = useState("");
-  const [categories, setCategories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]);
   const quillRef = useRef<HTMLDivElement>(null);
   const quillInstance = useRef<Quill | null>(null);
   const navigate = useNavigate();
@@ -32,17 +35,35 @@ const Create: React.FC = () => {
     }
   }, []);
 
-  const addCategory = () => {
-    if (newCategory.trim() && !categories.includes(newCategory)) {
-      setCategories([...categories, newCategory]);
-      setNewCategory("");
-    } else {
-      alert("カテゴリ名が空か、すでに存在しています。");
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const { data, error } = await supabase.from("categories").select("*");
+      if (!error && data) {
+        setCategories(data);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  const addCategory = async () => {
+    if (!newCategory.trim()) return;
+    const { data, error } = await supabase
+      .from("categories")
+      .insert({ name: newCategory })
+      .select();
+    if (error || !data) {
+      alert("カテゴリ追加に失敗しました");
+      return;
     }
+    setCategories((prev) => [...prev, data[0]]);
+    setSelectedCategoryIds((prev) => [...prev, data[0].id]);
+    setNewCategory("");
   };
 
-  const removeCategory = (category: string) => {
-    setCategories(categories.filter((cat) => cat !== category));
+  const toggleCategorySelection = (id: number) => {
+    setSelectedCategoryIds((prev) =>
+      prev.includes(id) ? prev.filter((cid) => cid !== id) : [...prev, id]
+    );
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -52,56 +73,45 @@ const Create: React.FC = () => {
     const contentHtml = quillInstance.current.root.innerHTML;
 
     try {
-      const { data, error } = await supabase
-        .from("blogs")
-        .insert([
-          {
-            title,
-            thumbnail,
-            content: contentHtml,
-            created_at: new Date().toISOString(),
-          },
-        ])
-        .select("id");
+      const { error } = await supabase.from("blogs").insert([
+        {
+          title,
+          thumbnail,
+          content: contentHtml,
+          created_at: new Date().toISOString(),
+          category_ids: selectedCategoryIds, // 配列で直接保存
+        },
+      ]);
 
       if (error) throw error;
-
-      const blogId = data?.[0]?.id;
-      if (!blogId) throw new Error("記事のIDが取得できませんでした。");
-
-      for (const category of categories) {
-        await supabase
-          .from("blog_categories")
-          .insert([{ blog_id: blogId, category_name: category }]);
-      }
-
       navigate("/Admin/dashboard");
     } catch (error) {
       alert(`エラーが発生しました: ${error}`);
     }
   };
 
-const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-  const file = e.target.files?.[0];
-  if (!file) return;
+  const handleThumbnailUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-  const fileExt = file.name.split(".").pop();
-  const fileName = `${Date.now()}.${fileExt}`;
-  const filePath = `${fileName}`;
+    const fileExt = file.name.split(".").pop();
+    const fileName = `${Date.now()}.${fileExt}`;
+    const filePath = `${fileName}`;
 
-  const { error } = await supabase.storage
-    .from("thumbnails")
-    .upload(filePath, file);
+    const { error } = await supabase.storage
+      .from("thumbnails")
+      .upload(filePath, file);
 
-  if (error) {
-    alert("画像のアップロードに失敗しました：" + error.message);
-    return;
-  }
+    if (error) {
+      alert("画像のアップロードに失敗しました：" + error.message);
+      return;
+    }
 
-  const { data } = supabase.storage.from("thumbnails").getPublicUrl(filePath);
-  setThumbnail(data.publicUrl);
-};
-
+    const { data } = supabase.storage.from("thumbnails").getPublicUrl(filePath);
+    setThumbnail(data.publicUrl);
+  };
 
   return (
     <div className={styles.adminContainer}>
@@ -109,7 +119,6 @@ const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => 
       <div className={styles.formContainer}>
         <h1>新しい記事作成</h1>
         <form onSubmit={handleSubmit}>
-          {/* 左側の入力エリア */}
           <div className={styles.leftColumn}>
             <label>タイトル:</label>
             <input
@@ -120,6 +129,9 @@ const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => 
               className={styles.inputField}
             />
 
+            <label>本文:</label>
+            <div ref={quillRef} className={styles.quillEditor}></div>
+
             <label>サムネイル画像:</label>
             <input
               type="file"
@@ -128,7 +140,7 @@ const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => 
               className={styles.inputField}
             />
 
-            <label>カテゴリの追加:</label>
+            <label>カテゴリ追加:</label>
             <input
               type="text"
               value={newCategory}
@@ -144,25 +156,17 @@ const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => 
             </button>
 
             <div className={styles.categoryList}>
-              {categories.map((category, index) => (
-                <div key={index} className={styles.categoryItem}>
-                  <span>{category}</span>
-                  <button
-                    type="button"
-                    onClick={() => removeCategory(category)}
-                    className={styles.deleteCategoryButton}
-                  >
-                    削除
-                  </button>
-                </div>
+              {categories.map((category) => (
+                <label key={category.id} className={styles.categoryItem}>
+                  <input
+                    type="checkbox"
+                    checked={selectedCategoryIds.includes(category.id)}
+                    onChange={() => toggleCategorySelection(category.id)}
+                  />
+                  {category.name}
+                </label>
               ))}
             </div>
-          </div>
-
-          {/* 右側のエディターエリア */}
-          <div className={styles.rightColumn}>
-            <label>本文:</label>
-            <div ref={quillRef} className={styles.quillEditor}></div>
           </div>
 
           <button type="submit" className={styles.submitButton}>
