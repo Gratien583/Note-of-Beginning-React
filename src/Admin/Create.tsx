@@ -7,18 +7,21 @@ import styles from "./css/create.module.css";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
 
+// カテゴリの型定義
 type Category = { id: number; name: string };
 
 const Create: React.FC = () => {
-  const [title, setTitle] = useState("");
-  const [thumbnail, setThumbnail] = useState("");
-  const [newCategory, setNewCategory] = useState("");
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]);
-  const quillRef = useRef<HTMLDivElement>(null);
-  const quillInstance = useRef<Quill | null>(null);
-  const navigate = useNavigate();
+  // 入力状態の管理
+  const [title, setTitle] = useState(""); // 記事タイトル
+  const [thumbnail, setThumbnail] = useState(""); // サムネイル画像URL
+  const [newCategory, setNewCategory] = useState(""); // 新しく追加するカテゴリ名
+  const [categories, setCategories] = useState<Category[]>([]); // 既存カテゴリ一覧
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]); // 選択されたカテゴリID
+  const quillRef = useRef<HTMLDivElement>(null); // QuillエディタのDOM参照
+  const quillInstance = useRef<Quill | null>(null); // Quillエディタインスタンス
+  const navigate = useNavigate(); // ページ遷移用
 
+  // Quillエディタの初期化
   useEffect(() => {
     if (quillRef.current && !quillInstance.current) {
       quillInstance.current = new Quill(quillRef.current, {
@@ -35,6 +38,7 @@ const Create: React.FC = () => {
     }
   }, []);
 
+  // カテゴリ一覧の取得
   useEffect(() => {
     const fetchCategories = async () => {
       const { data, error } = await supabase.from("categories").select("*");
@@ -45,6 +49,7 @@ const Create: React.FC = () => {
     fetchCategories();
   }, []);
 
+  // 新しいカテゴリの追加
   const addCategory = async () => {
     if (!newCategory.trim()) return;
     const { data, error } = await supabase
@@ -60,12 +65,14 @@ const Create: React.FC = () => {
     setNewCategory("");
   };
 
+  // カテゴリの選択・解除
   const toggleCategorySelection = (id: number) => {
     setSelectedCategoryIds((prev) =>
       prev.includes(id) ? prev.filter((cid) => cid !== id) : [...prev, id]
     );
   };
 
+  // 記事の送信処理
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!quillInstance.current) return;
@@ -79,7 +86,7 @@ const Create: React.FC = () => {
           thumbnail,
           content: contentHtml,
           created_at: new Date().toISOString(),
-          category_ids: selectedCategoryIds, // 配列で直接保存
+          category_ids: selectedCategoryIds, // カテゴリは数値配列で保存
         },
       ]);
 
@@ -90,6 +97,7 @@ const Create: React.FC = () => {
     }
   };
 
+  // サムネイル画像のアップロード処理
   const handleThumbnailUpload = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -120,6 +128,7 @@ const Create: React.FC = () => {
         <h1>新しい記事作成</h1>
         <form onSubmit={handleSubmit}>
           <div className={styles.leftColumn}>
+            {/* タイトル入力欄 */}
             <label>タイトル:</label>
             <input
               type="text"
@@ -129,9 +138,11 @@ const Create: React.FC = () => {
               className={styles.inputField}
             />
 
+            {/* 本文（Quillエディタ） */}
             <label>本文:</label>
             <div ref={quillRef} className={styles.quillEditor}></div>
 
+            {/* サムネイル画像アップロード */}
             <label>サムネイル画像:</label>
             <input
               type="file"
@@ -140,6 +151,7 @@ const Create: React.FC = () => {
               className={styles.inputField}
             />
 
+            {/* 新規カテゴリ入力 */}
             <label>カテゴリ追加:</label>
             <input
               type="text"
@@ -155,6 +167,7 @@ const Create: React.FC = () => {
               カテゴリ追加
             </button>
 
+            {/* カテゴリ選択 */}
             <div className={styles.categoryList}>
               {categories.map((category) => (
                 <label key={category.id} className={styles.categoryItem}>
@@ -169,6 +182,7 @@ const Create: React.FC = () => {
             </div>
           </div>
 
+          {/* 送信ボタン */}
           <button type="submit" className={styles.submitButton}>
             記事を作成
           </button>

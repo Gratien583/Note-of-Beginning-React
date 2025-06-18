@@ -5,41 +5,49 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import styles from "./css/home.module.css";
 
+// ブログの型定義（必要なフィールドのみ）
 type Blog = {
   id: string;
   title: string;
   thumbnail?: string;
   created_at: string;
-  category_ids: number[];
+  category_ids: number[]; // 紐づくカテゴリIDの配列
 };
 
+// カテゴリの型定義
 type Category = {
   id: number;
   name: string;
 };
 
 const Home: React.FC = () => {
+  // 状態管理：ブログ一覧・カテゴリ一覧・検索キーワード・選択中カテゴリ
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [allCategories, setAllCategories] = useState<Category[]>([]);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [selectedCategoryId, setSelectedCategoryId] = useState("");
+
   const navigate = useNavigate();
 
+  // ブログ一覧の取得（検索キーワード・カテゴリでフィルタ）
   const fetchBlogs = useCallback(async () => {
     let query = supabase
       .from("blogs")
       .select("*")
       .eq("published", true)
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false }); // 新しい順
 
+    // タイトル検索キーワードでフィルタ
     if (searchKeyword) {
       query = query.ilike("title", `%${searchKeyword}%`);
     }
 
+    // カテゴリ選択があれば category_ids に含まれるブログに絞り込み
     if (selectedCategoryId) {
       query = query.contains("category_ids", [Number(selectedCategoryId)]);
     }
 
+    // クエリ実行
     const { data, error } = await query;
 
     if (error) {
@@ -49,6 +57,7 @@ const Home: React.FC = () => {
     }
   }, [searchKeyword, selectedCategoryId]);
 
+  // カテゴリ一覧の取得（選択肢用）
   const fetchCategories = async () => {
     const { data, error } = await supabase
       .from("categories")
@@ -62,6 +71,7 @@ const Home: React.FC = () => {
     }
   };
 
+  // 初回レンダリング時にブログ＆カテゴリを両方取得
   useEffect(() => {
     const fetchData = async () => {
       await fetchBlogs();
@@ -70,18 +80,24 @@ const Home: React.FC = () => {
     fetchData();
   }, [fetchBlogs]);
 
+  // 検索キーワード変更時の処理
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchKeyword(e.target.value);
   };
 
+  // カテゴリ選択変更時の処理
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedCategoryId(e.target.value);
   };
 
   return (
     <>
+      {/* ヘッダー（共通） */}
       <Header />
+
+      {/* メインエリア */}
       <div className={styles.main}>
+        {/* カテゴリ選択フォーム */}
         <div className={styles.container}>
           <label htmlFor="category-select">カテゴリ:</label>
           <select
@@ -99,6 +115,7 @@ const Home: React.FC = () => {
           </select>
         </div>
 
+        {/* 検索ボックス */}
         <input
           type="text"
           placeholder="検索キーワード"
@@ -107,16 +124,18 @@ const Home: React.FC = () => {
           className={styles.searchInput}
         />
 
+        {/* ブログ一覧 */}
         <div className={styles.blogList}>
           {blogs.length > 0 ? (
             blogs.map((blog) => (
               <div
                 key={blog.id}
-                onClick={() => navigate(`/blog/${blog.id}`)}
+                onClick={() => navigate(`/blog/${blog.id}`)} // ブログ詳細へ遷移
                 className={styles.blogBoxLink}
                 style={{ cursor: "pointer" }}
               >
                 <div className={styles.blogBox}>
+                  {/* サムネイル画像がある場合 */}
                   {blog.thumbnail && (
                     <div className={styles.thumbnailContainer}>
                       <img
@@ -126,15 +145,19 @@ const Home: React.FC = () => {
                       />
                     </div>
                   )}
+                  {/* タイトル */}
                   <h2>{blog.title}</h2>
                 </div>
               </div>
             ))
           ) : (
+            // 記事がない場合の表示
             <p className={styles.noBlogs}>記事がありません。</p>
           )}
         </div>
       </div>
+
+      {/* フッター（共通） */}
       <Footer />
     </>
   );

@@ -4,16 +4,18 @@ import SideNav from "./components/SideNav";
 import Footer from "./components/Footer";
 import styles from "./css/account-list.module.css";
 
+// アカウント型定義
 type Account = {
   id: string;
   username: string;
 };
 
 const AccountList: React.FC = () => {
+  // アカウント一覧と通知メッセージ用の状態を管理
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [message, setMessage] = useState<string | null>(null);
 
-  // アカウント一覧取得
+  // ページ読み込み時にアカウント一覧を取得
   useEffect(() => {
     const fetchAccounts = async () => {
       try {
@@ -25,7 +27,7 @@ const AccountList: React.FC = () => {
         if (error) {
           throw new Error("アカウントの取得に失敗しました");
         }
-        setAccounts(data);
+        setAccounts(data); // アカウント一覧をstateにセット
       } catch (error) {
         console.error(error);
         alert("アカウントの取得に失敗しました。");
@@ -35,7 +37,7 @@ const AccountList: React.FC = () => {
     fetchAccounts();
   }, []);
 
-  // アカウント削除処理
+  // アカウント削除の処理（確認ダイアログあり）
   const handleDeleteAccount = async (accountId: string) => {
     const confirmDelete = window.confirm("このアカウントを削除しますか？");
     if (!confirmDelete) return;
@@ -44,12 +46,13 @@ const AccountList: React.FC = () => {
       const { error } = await supabase
         .from("accounts")
         .delete()
-        .eq("id", accountId);
+        .eq("id", accountId); // id に一致するアカウントを削除
 
       if (error) {
         throw new Error("アカウントの削除に失敗しました");
       }
 
+      // 削除成功時：メッセージ表示と状態更新
       setMessage("アカウントが削除されました");
       setAccounts((prev) => prev.filter((account) => account.id !== accountId));
     } catch (error) {
@@ -61,9 +64,14 @@ const AccountList: React.FC = () => {
   return (
     <div className={styles.adminContainer}>
       <SideNav />
+
       <div className={styles.contentContainer}>
         <h1>アカウント一覧</h1>
+
+        {/* 削除成功/失敗メッセージの表示 */}
         {message && <p className={styles.successMessage}>{message}</p>}
+
+        {/* アカウント一覧テーブル */}
         <table className={styles.accountTable}>
           <thead>
             <tr>
@@ -90,6 +98,7 @@ const AccountList: React.FC = () => {
           </tbody>
         </table>
       </div>
+
       <Footer />
     </div>
   );

@@ -6,6 +6,7 @@ import SideNav from "./components/SideNav";
 import Footer from "./components/Footer";
 import styles from "./css/list.module.css";
 
+// ブログデータ型の定義
 type Blog = {
   id: string;
   title: string;
@@ -17,12 +18,13 @@ const List: React.FC = () => {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const navigate = useNavigate();
 
+  // 初回マウント時にブログ一覧を取得
   useEffect(() => {
     const fetchBlogs = async () => {
       const { data, error } = await supabase
         .from("blogs")
         .select("*")
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false }); // 新しい順で取得
       if (error) {
         alert("記事の取得に失敗しました。");
       } else {
@@ -32,10 +34,10 @@ const List: React.FC = () => {
     fetchBlogs();
   }, []);
 
-  // 公開状態の切り替え
+  // 公開/非公開の切り替え処理
   const handleTogglePublish = async (id: string, currentStatus: boolean) => {
     try {
-      const newStatus = await toggleBlogPublishStatus(id, currentStatus);
+      const newStatus = await toggleBlogPublishStatus(id, currentStatus); // 外部フックの利用
       setBlogs((prevBlogs) =>
         prevBlogs.map((blog) =>
           blog.id === id ? { ...blog, published: newStatus } : blog
@@ -46,7 +48,7 @@ const List: React.FC = () => {
     }
   };
 
-  // 記事の削除
+  // 記事削除処理（確認後にSupabaseから削除）
   const deleteBlog = async (id: string) => {
     if (window.confirm("この記事を削除しますか？")) {
       const { error } = await supabase.from("blogs").delete().eq("id", id);
@@ -61,9 +63,13 @@ const List: React.FC = () => {
 
   return (
     <div className={styles.adminContainer}>
+      {/* サイドナビゲーション */}
       <SideNav />
+
       <div className={styles.contentContainer}>
         <h1>記事一覧</h1>
+
+        {/* ブログ一覧テーブル */}
         <table className={styles.blogTable}>
           <thead>
             <tr>
@@ -78,7 +84,10 @@ const List: React.FC = () => {
           <tbody>
             {blogs.map((blog) => (
               <tr key={blog.id}>
+                {/* 記事タイトル */}
                 <td>{blog.title}</td>
+
+                {/* サムネイル画像 or テキスト */}
                 <td>
                   {blog.thumbnail ? (
                     <img
@@ -90,6 +99,8 @@ const List: React.FC = () => {
                     "サムネイルなし"
                   )}
                 </td>
+
+                {/* 公開状態（スタイル切替あり） */}
                 <td
                   className={
                     blog.published
@@ -99,6 +110,8 @@ const List: React.FC = () => {
                 >
                   {blog.published ? "公開中" : "非公開"}
                 </td>
+
+                {/* 公開・非公開切替ボタン */}
                 <td>
                   <button
                     onClick={() => handleTogglePublish(blog.id, blog.published)}
@@ -106,11 +119,15 @@ const List: React.FC = () => {
                     {blog.published ? "非公開にする" : "公開する"}
                   </button>
                 </td>
+
+                {/* 編集ページへの遷移ボタン */}
                 <td>
                   <button onClick={() => navigate(`/admin/edit/${blog.id}`)}>
                     編集
                   </button>
                 </td>
+
+                {/* 削除ボタン */}
                 <td>
                   <button
                     className={styles.deleteButton}
@@ -124,6 +141,8 @@ const List: React.FC = () => {
           </tbody>
         </table>
       </div>
+
+      {/* フッター */}
       <Footer />
     </div>
   );

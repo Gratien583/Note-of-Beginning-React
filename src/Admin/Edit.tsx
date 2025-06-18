@@ -7,20 +7,25 @@ import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import styles from "./css/edit.module.css";
 
+// カテゴリの型定義
 type Category = { id: number; name: string };
 
 const Edit: React.FC = () => {
+  // ルートパラメータからブログIDを取得
   const { id } = useParams<{ id: string }>();
-  const [title, setTitle] = useState("");
-  const [thumbnail, setThumbnail] = useState("");
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [newCategory, setNewCategory] = useState("");
-  const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]);
-  const quillRef = useRef<HTMLDivElement>(null);
-  const quillInstance = useRef<Quill | null>(null);
+
+  // 各種ステート定義
+  const [title, setTitle] = useState(""); // タイトル
+  const [thumbnail, setThumbnail] = useState(""); // サムネイルURL
+  const [categories, setCategories] = useState<Category[]>([]); // すべてのカテゴリ
+  const [newCategory, setNewCategory] = useState(""); // 新規カテゴリ名
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]); // 選択されたカテゴリID群
+  const quillRef = useRef<HTMLDivElement>(null); // QuillエディタのDOM参照
+  const quillInstance = useRef<Quill | null>(null); // Quillインスタンス参照
   const navigate = useNavigate();
 
   useEffect(() => {
+    // ブログ記事の取得
     const fetchBlog = async () => {
       if (!id) {
         alert("ブログIDが指定されていません");
@@ -38,6 +43,7 @@ const Edit: React.FC = () => {
         setTitle(data.title);
         setThumbnail(data.thumbnail);
         setSelectedCategoryIds(data.category_ids || []);
+        // Quillエディタに本文を表示
         if (quillInstance.current) {
           quillInstance.current.root.innerHTML = data.content;
         }
@@ -47,6 +53,7 @@ const Edit: React.FC = () => {
       }
     };
 
+    // カテゴリ一覧の取得
     const fetchCategories = async () => {
       const { data, error } = await supabase.from("categories").select("*");
       if (data) setCategories(data);
@@ -55,6 +62,7 @@ const Edit: React.FC = () => {
     fetchBlog();
     fetchCategories();
 
+    // Quillエディタ初期化（1度だけ）
     if (quillRef.current && !quillInstance.current) {
       quillInstance.current = new Quill(quillRef.current, {
         theme: "snow",
@@ -70,6 +78,7 @@ const Edit: React.FC = () => {
     }
   }, [id, navigate]);
 
+  // カテゴリの選択・解除
   const toggleCategorySelection = (categoryId: number) => {
     setSelectedCategoryIds((prev) =>
       prev.includes(categoryId)
@@ -78,6 +87,7 @@ const Edit: React.FC = () => {
     );
   };
 
+  // 新規カテゴリの追加処理
   const addNewCategory = async () => {
     const trimmed = newCategory.trim();
     if (!trimmed || categories.some((c) => c.name === trimmed)) return;
@@ -92,11 +102,13 @@ const Edit: React.FC = () => {
       return;
     }
 
+    // 追加後にカテゴリ一覧と選択に反映
     setCategories((prev) => [...prev, data[0]]);
     setSelectedCategoryIds((prev) => [...prev, data[0].id]);
     setNewCategory("");
   };
 
+  // サムネイル画像のアップロード処理
   const handleThumbnailUpload = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -120,6 +132,7 @@ const Edit: React.FC = () => {
     setThumbnail(data.publicUrl);
   };
 
+  // フォーム送信時の記事更新処理
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!quillInstance.current) return;
@@ -147,9 +160,11 @@ const Edit: React.FC = () => {
     <>
       <div className={styles.adminContainer}>
         <SideNav />
+
         <div className={styles.formContainer}>
           <h1>記事を編集</h1>
           <form onSubmit={handleSubmit}>
+            {/* タイトル入力 */}
             <label className={styles.label}>タイトル:</label>
             <input
               type="text"
@@ -159,9 +174,11 @@ const Edit: React.FC = () => {
               className={styles.inputField}
             />
 
+            {/* 本文エディタ（Quill） */}
             <label className={styles.label}>本文:</label>
             <div ref={quillRef} className={styles.quillEditor}></div>
 
+            {/* サムネイル画像の表示とアップロード */}
             <label className={styles.label}>サムネイル画像:</label>
             {thumbnail && (
               <img
@@ -183,6 +200,7 @@ const Edit: React.FC = () => {
               className={styles.inputField}
             />
 
+            {/* 新規カテゴリの追加 */}
             <label className={styles.label}>カテゴリの追加:</label>
             <input
               type="text"
@@ -198,6 +216,7 @@ const Edit: React.FC = () => {
               カテゴリ追加
             </button>
 
+            {/* カテゴリの選択リスト */}
             <div className={styles.categoryList}>
               {categories.map((category) => (
                 <label key={category.id} className={styles.categoryLabel}>
@@ -212,6 +231,7 @@ const Edit: React.FC = () => {
               ))}
             </div>
 
+            {/* 保存ボタン */}
             <button type="submit" className={styles.submitButton}>
               記事を保存
             </button>
