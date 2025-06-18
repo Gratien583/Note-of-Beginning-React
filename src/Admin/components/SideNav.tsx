@@ -18,7 +18,7 @@ const SideNav: React.FC = () => {
   const handleLogout = () => {
     if (window.confirm("本当にログアウトしますか？")) {
       localStorage.removeItem("logged_in_user");
-      navigate("/login");
+      navigate("/");
     }
   };
 
