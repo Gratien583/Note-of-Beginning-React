@@ -44,6 +44,7 @@
 }
 
 .addButton {
+    width: 120px;
     padding: 10px;
     background-color: #007BFF;
     color: white;
@@ -57,6 +58,7 @@
 }
 
 .submitButton {
+    width: 140px;
     padding: 12px;
     background-color: #28a745;
     color: white;
