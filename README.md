@@ -8,32 +8,30 @@
 
 ## 📦 Database Schema
 ```sql
--- accounts table
-CREATE TABLE accounts (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    username VARCHAR(50) NOT NULL UNIQUE,
-    password_hash TEXT NOT NULL,
-    created_at TIMESTAMPTZ DEFAULT NOW()
+-- ユーザーアカウント
+create table accounts (
+  id uuid primary key default gen_random_uuid(),
+  username varchar not null,
+  password text not null,
+  created_at timestamptz default now()
 );
 
--- blogs table
-CREATE TABLE blogs (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    title VARCHAR(100) NOT NULL,
-    thumbnail TEXT,
-    content TEXT NOT NULL,
-    published BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMPTZ DEFAULT NOW()
+-- ブログ記事
+create table blogs (
+  id uuid primary key default gen_random_uuid(),
+  title varchar not null,
+  thumbnail text,
+  content text not null,
+  published boolean default false,
+  created_at timestamptz default now(),
+  category_ids int[]
 );
 
--- blog_categories table
-CREATE TABLE blog_categories (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    blog_id UUID NOT NULL,
-    category_name VARCHAR(50) NOT NULL,
-    FOREIGN KEY (blog_id) REFERENCES blogs(id) ON DELETE CASCADE
+-- カテゴリ
+create table categories (
+  id serial primary key,
+  name text not null unique
 );
-
 ```
 
 ## 🔗 関連プロジェクト
