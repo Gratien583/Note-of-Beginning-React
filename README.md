@@ -285,5 +285,3 @@ Visuals will be added in the future.
 - 🐘 PHP + MySQL Version: Uses PHP on the server side and MySQL for data storage  
   [https://github.com/Gratien583/Note-of-Beginning-PHP](https://github.com/Gratien583/Note-of-Beginning-PHP)  
 
-- 🐳 Docker Version (Beta)  
-  [https://github.com/Gratien583/Note-of-Beginning-Docker](https://github.com/Gratien583/Note-of-Beginning-Docker)
